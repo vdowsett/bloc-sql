@@ -1,0 +1,116 @@
+1. Write out a generic SELECT statement.
+
+    SELECT * FROM table;
+
+2. Create a fun way to remember the order of operations in a SELECT statement, such as a mnemonic.
+
+    Sammy Franny's Wallaby
+
+3. Given this dogs table, write queries to select the following pieces of data:
+
+    Intake teams typically guess the breed of shelter dogs, so the breed column may have multiple words (for example, "Labrador Collie mix").
+
+    a. Display the name, gender, and age of all dogs that are part Labrador.
+
+        SELECT name, gender, age
+            FROM dogs
+            WHERE breed LIKE "%labrador%";
+
+    b. Display the ids of all dogs that are under 1 year old.
+
+        SELECT id
+            FROM dogs
+            WHERE age < 1;
+
+    c. Display the name and age of all dogs that are female and over 35lbs.
+
+        SELECT name, age
+            FROM dogs
+            WHERE gender = 'F' AND weight > 35;
+
+    d. Display all of the information about all dogs that are not Shepherd mixes.
+
+        SELECT *
+            FROM dogs
+            WHERE breed NOT LIKE "%shepherd%";
+
+    e. Display the id, age, weight, and breed of all dogs that are either over 60lbs or Great Danes.
+
+        SELECT id, age, weight, breed
+            FROM dogs
+            WHERE weight > 60 OR breed LIKE "gread dane";
+
+4. Given this cats table, what records are returned from these queries?
+
+    a. SELECT name, adoption_date FROM cats;
+
+        name, adoption_date //headers
+        Mushi, 2016-03-22
+        Seashell, NULL
+        Azul, 2016-04-17
+        Victoire, 2016-09-01
+        Nala, NULL
+
+    b. SELECT name, age FROM cats;
+
+        name, age //headers
+        Mushi, 1
+        Seashell, 7
+        Azul, 3
+        Victoire, 7
+        Nala, 1
+
+    From the cats table, write queries to select the following pieces of data.
+
+    c. Display all the information about all of the available cats.
+
+        SELECT *
+            FROM cats;
+
+    d. Display the name and sex of all cats who are 7 years old.
+
+        SELECT name, gender
+            FROM cats
+            WHERE age = 7;
+
+    c. Find all of the names of the cats, so you don’t choose duplicate names for new cats.
+
+        SELECT name
+            FROM cats;
+
+5. List each comparison operator and explain when you would use it. Include a real world example for each. If you can’t list these from memory, do these flashcards until you can!
+
+    LIKE  |  used to search strings, find string that is the same or contains that world. For example, WHERE name LIKE "Vicky%" will search all names that start with Vicky
+
+    NOT LIKE  |  used to query strings and find all strings that does not contain a word. For example, WHERE name NOT LIKE "Vicky" will find all names, expect Vicky
+
+    =  |  the same, so WHERE age = 3 will return all entries where age is 3
+
+    >  |  greater than, so WHERE age > 3 will return all entries where age is greater than 3
+
+    <  |  less than, so WHERE age < 3 will return all entries where age is less than 3
+
+    <> or !=  |  not equal to, so WHERE age <> 3 will return all entries where age is less than and greater than 3, but entries where age equals three will be excluded.
+
+    <=  |  less than and equal to, so WHERE age <= 3 will return all entries where age is less than and including 3
+
+    >=  |  greater than and equal to, so WHERE age >= 3 will return all entries where age is greater than and including 3
+
+6. From the cats table, what data is returned from these queries?
+    a. SELECT name FROM cats WHERE gender = ‘F’;
+
+        Seashell
+        Nala
+
+    b. SELECT name FROM cats WHERE age <> 3;
+
+        Mushi
+        Seashell
+        Victoire
+        Nala
+
+    c. SELECT ID FROM cats WHERE name != ‘Mushi’ AND gender = ‘M’;
+        
+        Azul
+        Victoire
+        
