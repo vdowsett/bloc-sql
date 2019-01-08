@@ -1,0 +1,203 @@
+1. How do you find related data held in two separate data tables?
+
+    You would use a JOIN statement in your query, and use a primary key and foreign key as the link between the tables.
+
+2. Explain, in your own words, the difference between an INNER JOIN, LEFT OUTER JOIN, and RIGHT OUTER JOIN. Give a real-world example for each.
+
+    INNER
+        This is the default join between 2 tables, and will display all the data that is present on both tables.
+
+        For example, if you want to search 2 tables, customers and purchases over $200 to send thank you notes, you will run an inner join to find all the customers and their addresses, joined onto table purchases by customer ID, where purchase value was greater than $200. 
+
+        SELECT c.name, c.addresses
+            FROM customers AS c
+            JOIN purchases AS p
+                ON c.id = p.customer_id
+            WHERE p.price > 200;
+
+    LEFT OUTER JOIN
+        This will display all the data that has the conditions met on both the left table that is also on the right table, and then it will also create new rows for all the values that is on the left table but not on the right table, and have a value of null where the criteria is not met. 
+
+        For example, if we want to find all the values of customer purchases who have made purchases with us in the past, as well as customers who have in our database but they have never completed actually completed their a purchase (purchase value is null), we would use the LEFT OUTER JOIN. We can then use this to do some cool math calculations to evaluate our success of how many customers are in each spending bracket, and compare that to how many customers we have in our database that never converted. (although this is for another checkpoint!)
+
+        SELECT c.name, p.purchase
+        FROM customers AS c
+        LEFT OUTER JOIN purchases AS p
+            ON c.id = p.customer_id;
+
+    RIGHT OUTER JOIN
+        This will display all the data that has the conditions met on both the left table that is also on the right table, and then it will also create new rows for all the values that is on the right table but not on the left table, and have a value of null where the criteria is not met. 
+
+        For example, maybe we what to list all of our enrolled students who are currently enrolled, regardless of whether they have been allocated a dorm room yet. 
+
+        SELECT s.name
+        FROM students AS s
+        RIGHT OUTER JOIN dorms AS d
+            ON s.id = d.student_id;
+
+3. Define primary key and foreign key. Give a real-world example for each.
+
+    Primary key is the unique identifying key on a table, usually the first column. For example on the student table each student is assigned a unique student_id.
+    Foreign key is a key assigned to a row that relates to another table. For example, on the dorm table each room assigned will relate to a student_id and that correlates to a unique student. However each room may contain 2 student ids as there are 2 beds.
+
+4. Define aliasing.
+
+    Alliasing is a technique of abbreviating the names of the tables so that you don't have to keep typing the full name in a query.
+
+5. Change this query so that you are using aliasing:
+
+    SELECT professor.name, compensation.salary,
+    compensation.vacation_days FROM professor JOIN
+    compensation ON professor.id =
+    compensation.professor_id;
+
+    SELECT p.name, c.salary, c.vacation_days
+    FROM professor AS p
+    JOIN compensation AS c 
+        ON p.id = c.professor_id;
+
+6. Why would you use a NATURAL JOIN? Give a real-world example.
+
+    A NATURAL JOIN is a JOIN operation that creates an implicit join clause for you based on the common columns in the two tables being joined. Common columns are columns that have the same name in both tables.
+
+    If you wanted to list all payments from several payment type tables, such as pending payments, completed payments? It would be better to have a single payment table with a payment status, but it's all I can think of right now.
+
+7. Using this Employee schema and data, write queries to find the following information: 
+    
+    a. List all employees and all shifts. 
+
+    // I AM ASSUMING THAT WE WANT ALL SHIFTS, WHETHER THEY HAVE BEEN FILLED OR NOT, AND ALL EMPLOYEES, WHETHER THEY HAVE A SHIFT OR NOT. THEREFOR I AM USING FULL OUTER JOIN. IF WE WANTED ONLY SHIFTS THAT HAVE BEEN FILLED AND THE EMPLOYEES THAT HAVE FILLED THEM, WE WOULD USE THE INNTER JOIN.
+
+        SELECT employees.name, shifts.date, shifts.start_time, shifts.end_time
+            FROM scheduled_shifts
+            FULL OUTER JOIN employees
+                ON employees.id = scheduled_shifts.employee_id
+            FULL OUTER JOIN shifts
+                ON scheduled_shifts.shift_id = shifts.id;
+
+8. Using this Adoption schema and data, please write queries to retrieve the following information and include the results:
+
+    a. Create a list of all volunteers. If the volunteer is fostering a dog, include each dog as well.
+
+        SELECT v.first_name, v.last_name, d.name
+        FROM volunteers as v
+        LEFT OUTER JOIN dogs as d
+            ON v.foster_dog_id = d.id;
+
+        Results:
+
+        | first_name | last_name  | name      |
+        | ---------- | ---------- | --------- |
+        | Rubeus     | Hagrid     | Munchkin  |
+        | Marjorie   | Dursley    | Marmaduke |
+        | Sirius     | Black      |           |
+        | Remus      | Lupin      |           |
+        | Albus      | Dumbledore |           |
+
+
+    b. The cat's name, adopter's name, and adopted date for each cat adopted within the past month to be displayed as part of the "Happy Tail" social media promotion which posts recent successful adoptions.
+
+        SELECT c.name, d.first_name, d.last_name, a.date
+        FROM cat_adoptions AS a
+        JOIN cats AS c
+            ON c.id = a.cat_id
+        INNER JOIN adopters as d
+            ON d.id = a.adopter_id
+        WHERE a.date >= current_date - 30;
+
+        | name     | first_name | last_name | date                     |
+        | -------- | ---------- | --------- | ------------------------ |
+        | Mushi    | Arabella   | Figg      | 2018-12-19T00:00:00.000Z |
+        | Victoire | Argus      | Filch     | 2018-12-24T00:00:00.000Z |
+
+    d. Create a list of adopters who have not yet chosen a dog to adopt.
+
+        SELECT a.first_name, a.last_name, d.adopter_id, d.dog_id
+        FROM adopters AS a
+        LEFT JOIN dog_adoptions AS d
+            ON a.id = d.adopter_id
+        WHERE d.adopter_id IS null;
+
+        | first_name | last_name | adopter_id | dog_id |
+        | ---------- | --------- | ---------- | ------ |
+        | Hermione   | Granger   |            |        |
+        | Arabella   | Figg      |            |        |
+
+    e. Lists of all cats and all dogs who have not been adopted.
+
+        SELECT dogs.name
+        FROM dogs
+        LEFT JOIN dog_adoptions
+            ON dogs.id = dog_adoptions.dog_id
+        WHERE dog_adoptions.dog_id IS NULL;
+
+        Boujee
+        Munchkin
+        Marley
+        Lassie
+        Marmaduke
+
+        SELECT cats.name
+        FROM cats
+        LEFT JOIN cat_adoptions
+            ON cats.id = cat_adoptions.cat_id
+        WHERE cat_adoptions.cat_id IS NULL;
+
+        Seashell
+        Nala
+
+    f. The name of the person who adopted Rosco.
+
+    //since I'm given the name of the dog, not the dog ID is joing the 3 tables. If I were given the dog's id instead of name I would use only the 2.
+
+        SELECT adopters.first_name, adopters.last_name
+        FROM adopters 
+        JOIN dog_adoptions
+            ON adopters.id = dog_adoptions.adopter_id
+        JOIN dogs
+            ON dog_adoptions.dog_id = dogs.id
+        WHERE dogs.name = 'Rosco';
+
+        first_name	last_name
+        Argus	Filch
+
+9. Using this Library schema and data, write queries applying the following scenarios and include the results:
+
+    a. To determine if the library should buy more copies of a given book, please provide the names and position, in order, of all of the patrons with a hold (request for a book with all copies checked out) on "Advanced Potion-Making".
+
+        SELECT p.name, h.rank
+        FROM patrons AS p
+        JOIN holds AS h 
+            ON p.id = h.patron_id
+        JOIN books AS b
+            ON b.isbn = h.isbn 
+        WHERE b.title = 'Advanced Potion-Making'
+        ORDER BY h.rank;
+        
+        Results:
+
+        name	rank
+        Terry Boot	1
+        Cedric Diggory	2
+
+
+    b. List all of the library patrons. If they have one or more books checked out, list the books with the patrons.
+
+        SELECT p.name, b.title
+        FROM patrons AS p
+        LEFT OUTER JOIN transactions AS t
+            ON p.id = t.patron_id
+        JOIN books AS b
+            ON b.isbn = t.isbn
+        ORDER BY p.name;
+
+        Results:
+
+        name	title
+        Cedric Diggory	Fantastic Beasts and Where to Find Them
+        Cho Chang	Advanced Potion-Making
+        Hermione Granger	Fantastic Beasts and Where to Find Them
+        Hermione Granger	Hogwarts: A History
+        Padma Patil	Fantastic Beasts and Where to Find Them
+        Terry Boot	Advanced Potion-Making
+        Terry Boot	Fantastic Beasts and Where to Find Them
